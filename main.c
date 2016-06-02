@@ -46,23 +46,19 @@ unsigned char beep_count = 0;
 unsigned char bp = 0;
 
 void timerOff(void) {
-
     if (keyPressed) {
         waitForKeyRelease();
     }
 
     handler = waitForKeyPress;
-    INTCONbits.INTF = 0; // clear the interrupt flag
-    INTCONbits.INTE = 1; // enable the external interrupt
+    T1CONbits.TMR1ON = 0; // bit 0 enables timer
 }
 
 void mainTimer(void) {
 
     if (keyPressed) {
         timerOff();
-    }
-
-    if (bp) {
+    } else if (bp) {
         bp = 0;
         msec_count++;
         if (msec_count > 4) {
@@ -109,10 +105,12 @@ void keyReleased(void) {
     blip_count = 0;
     beep_count = 0;
 
-    INTCONbits.INTF = 0; // clear the interrupt flag
-    INTCONbits.INTE = 1; // enable the external interrupt
-
-    keyPressed = 0;
+    bp = 0;
+    
+    TMR1H = 231; // preset for timer1 MSB register 200ms
+    TMR1L = 144; // preset for timer1 LSB register
+    T1CONbits.TMR1ON = 1; // bit 0 enables timer
+    keyPressed = 0;    
 }
 
 void waitForKeyRelease(void) {
@@ -137,7 +135,6 @@ void waitForKeyPress(void) {
 
 void interrupt tc_int(void) { // interrupt function
     if (INTCONbits.INTF) { // if timer flag is set & interrupt enabled
-        INTCONbits.INTE = 0; // disable the external interrupt
         INTCONbits.INTF = 0; // clear the interrupt flag
         keyPressed = 1;
     }
@@ -171,7 +168,7 @@ void main(void) {
     T1CONbits.T1CKPS1 = 0; // bits 5-4  Prescaler Rate Select bits
     T1CONbits.T1CKPS0 = 0; // bit 4
     T1CONbits.TMR1CS = 0; // bit 1 Timer1 Clock Source Select bit...0 = Internal clock (FOSC/4)
-    T1CONbits.TMR1ON = 1; // bit 0 enables timer
+    T1CONbits.TMR1ON = 0; // bit 0 enables timer
 
     TMR1H = 231; // preset for timer1 MSB register 200ms
     TMR1L = 144; // preset for timer1 LSB register
