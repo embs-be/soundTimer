@@ -106,11 +106,11 @@ void keyReleased(void) {
     beep_count = 0;
 
     bp = 0;
-    
+
     TMR1H = 231; // preset for timer1 MSB register 200ms
     TMR1L = 144; // preset for timer1 LSB register
     T1CONbits.TMR1ON = 1; // bit 0 enables timer
-    keyPressed = 0;    
+    keyPressed = 0;
 }
 
 void waitForKeyRelease(void) {
@@ -121,7 +121,7 @@ void waitForKeyRelease(void) {
     while (keyBuf) {
         keyBuf <<= 1;
         if (GP2 == 0) keyBuf++;
-        __delay_us(10);
+        __delay_ms(15);
     }
 
 }

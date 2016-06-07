@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/newTimer.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=newTimer.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=newtimer/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/soundTimer.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=soundTimer.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=soundtimer/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/newtimer/bin
+makeDirectory ${TMPDIR}/soundtimer/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/newtimer.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/soundtimer.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/newtimer.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/soundtimer.tar *
 checkReturnCode
 
 # Cleanup
