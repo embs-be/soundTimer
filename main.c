@@ -27,6 +27,31 @@ void waitForKeyRelease(void);
 Handler handler = waitForKeyPress;
 unsigned char keyPressed;
 
+void Timer1_on(void) {
+
+    //Timer1 Registers Prescaler= 1 - TMR1 Preset = 34285 - Freq = 1.00 Hz - Period = 1.000032 seconds
+    T1CONbits.T1CKPS1 = 0; // bits 5-4  Prescaler Rate Select bits
+    T1CONbits.T1CKPS0 = 0; // bit 4
+    T1CONbits.TMR1CS = 0; // bit 1 Timer1 Clock Source Select bit...0 = Internal clock (FOSC/4)
+
+    // Interrupt Registers
+    PIR1bits.TMR1IF = 0; // clear timer1 interrupt flag TMR1IF
+    PIE1bits.TMR1IE = 1; // enable Timer1 interrupts
+    INTCONbits.PEIE = 1; // bit6 Peripheral Interrupt Enable bit...1 = Enables all unmasked peripheral interrupts
+
+    TMR1H = 231; // preset for timer1 MSB register 200ms
+    TMR1L = 144; // preset for timer1 LSB register
+    T1CONbits.TMR1ON = 1; // bit 0 enables timer
+}
+
+void Timer1_off(void) {
+    T1CONbits.TMR1ON = 0; // bit 0 enables timer
+    PIR1bits.TMR1IF = 0; // clear timer1 interrupt flag TMR1IF
+    PIE1bits.TMR1IE = 0; // disable Timer1 interrupts
+    INTCONbits.PEIE = 0; // bit6 Peripheral Interrupt Enable bit...1 = Enables all unmasked peripheral interrupts
+}
+
+
 void beep() {
     unsigned char i;
 
@@ -51,7 +76,7 @@ void timerOff(void) {
     }
 
     handler = waitForKeyPress;
-    T1CONbits.TMR1ON = 0; // bit 0 enables timer
+    Timer1_off();
 }
 
 void mainTimer(void) {
@@ -106,11 +131,9 @@ void keyReleased(void) {
     beep_count = 0;
 
     bp = 0;
-
-    TMR1H = 231; // preset for timer1 MSB register 200ms
-    TMR1L = 144; // preset for timer1 LSB register
-    T1CONbits.TMR1ON = 1; // bit 0 enables timer
     keyPressed = 0;
+
+    Timer1_on();
 }
 
 void waitForKeyRelease(void) {
@@ -163,20 +186,6 @@ void main(void) {
     OPTION_REGbits.nGPPU = 0;
     WPU2 = 1;
     OPTION_REGbits.INTEDG = 0; // falling edge trigger the interrupt
-
-    //Timer1 Registers Prescaler= 1 - TMR1 Preset = 34285 - Freq = 1.00 Hz - Period = 1.000032 seconds
-    T1CONbits.T1CKPS1 = 0; // bits 5-4  Prescaler Rate Select bits
-    T1CONbits.T1CKPS0 = 0; // bit 4
-    T1CONbits.TMR1CS = 0; // bit 1 Timer1 Clock Source Select bit...0 = Internal clock (FOSC/4)
-    T1CONbits.TMR1ON = 0; // bit 0 enables timer
-
-    TMR1H = 231; // preset for timer1 MSB register 200ms
-    TMR1L = 144; // preset for timer1 LSB register
-
-    // Interrupt Registers
-    PIR1bits.TMR1IF = 0; // clear timer1 interrupt flag TMR1IF
-    PIE1bits.TMR1IE = 1; // enable Timer1 interrupts
-    INTCONbits.PEIE = 1; // bit6 Peripheral Interrupt Enable bit...1 = Enables all unmasked peripheral interrupts
 
     INTCONbits.INTF = 0; // clear the interrupt flag
     INTCONbits.INTE = 1; // enable the external interrupt
